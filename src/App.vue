@@ -5,11 +5,21 @@
         playerHeal : 100,
         monsterHeal: 100,
         game_is_on : false,
+        log_out : [],
+        friendHealth : {
+          backgroundColor : "#4863A0",
+          color : "#fff"
+        },
+        enemyHealth : {
+          backgroundColor : "#FF0000",
+          color : "#fff"
+        }
       }
     },
 
     methods:{
       start_game : function(){
+        this.log_out.push("Oyun Başladı");
         return(this.game_is_on = !this.game_is_on);
       },
 
@@ -17,22 +27,28 @@
         var point = Math.ceil(Math.random()*10);
         this.monsterAttack();
         this.monsterHeal-=point;
+        this.log_out.push(("Senin Canın: "+this.playerHeal));
+        this.log_out.push(("Canavarın Canı: "+this.monsterHeal));
       },
 
       special_attack : function(){
         var point = Math.ceil(Math.random()*40);
         this.monsterHeal-=point;
         this.monsterAttack();
+        this.log_out.push(("Senin Canın: "+this.playerHeal));
+        this.log_out.push(("Canavarın Canı: "+this.monsterHeal));
       },
 
       healUp : function(){
         var point = Math.ceil(Math.random()*20);
         this.playerHeal+=point;
         this.monsterAttack();
+        this.log_out.push(("Senin Canın: "+this.playerHeal));
       },
 
       giveUp : function(){
-        this.playerHeal = 0
+        this.playerHeal = 0;
+        this.log_out.push(("Senin Canın: "+this.playerHeal));
       },
       monsterAttack : function(){
         var point = Math.ceil(Math.random()*15);
@@ -44,6 +60,10 @@
       playerHeal : function(e){
         if(e <= 0){
           this.playerHeal = 0;
+          if(confirm("Oyunu Kaybettin Tekrar Oynamak İster Misin?")){
+            this.monsterHeal = 100;
+            this.playerHeal = 100;
+          }
         }else if(e >= 100){
           this.playerHeal = 100;
         }
@@ -51,6 +71,10 @@
       monsterHeal : function(val){
         if(val <= 0){
           this.monsterHeal = 0;
+          if(confirm("Oyunu Kazandın Tekrar Oynamak İster Misin")){
+            this.monsterHeal = 100;
+            this.playerHeal = 100;
+          }
         }else if(val >= 100){
           this.monsterHeal = 100;
         }
@@ -96,10 +120,9 @@
 
     <section class="row log" v-if="game_is_on">
         <div class="small-12 columns">
-            <ul>
-                <li>
-
-                </li>
+            <ul v-for="(log,indexNumber) in log_out">
+                <li v-if="(indexNumber % 2 == 1)" :style="friendHealth">{{log}}</li>
+                <li v-else-if="(indexNumber % 2 == 0)" :style="enemyHealth">{{log}}</li>
             </ul>
         </div>
     </section>
